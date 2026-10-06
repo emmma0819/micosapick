@@ -5,66 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>미코사픽 주문서</title>
   <style>
-    * { box-sizing: border-box; font-family: sans-serif; }
-    body { background-color: #f7f5f0; margin: 0; padding: 15px 10px; }
-    .container { max-width: 450px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .header { background: #d32f2f; color: white; text-align: center; padding: 30px 20px; }
-    .header h1 { margin: 0; font-size: 28px; }
-    .bank-box { background: #9a0007; color: white; padding: 12px; text-align: center; font-size: 13px; }
-    .content { padding: 20px; }
-    .search-card { background: #fff5f5; border: 1px solid #ffcdd2; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    label { font-weight: bold; display: block; margin-top: 12px; margin-bottom: 5px; font-size: 13px; }
-    input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-    button.submit-btn { width: 100%; background: #d32f2f; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 6px; margin-top: 20px; cursor: pointer; font-weight: bold; }
-    button.search-btn { width: 100%; background: #333; color: white; border: none; padding: 8px; font-size: 13px; border-radius: 4px; margin-top: 6px; cursor: pointer; }
+    * { box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
+    body { background-color: #f5f5f5; margin: 0; padding: 20px 10px; color: #333; }
+    .container { max-width: 500px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    .header { background: #673ab7; color: white; text-align: center; padding: 30px 20px; }
+    .header h1 { margin: 0; font-size: 26px; }
+    .header p { margin-top: 8px; opacity: 0.9; font-size: 14px; }
+    
+    .notice-box { background: #f3e5f5; border: 1px solid #d1c4e9; padding: 15px; margin: 20px; border-radius: 8px; font-size: 13px; line-height: 1.5; color: #4a148c; }
+    .notice-box strong { font-size: 14px; color: #311b92; }
+
+    .search-card { background: #fafafa; border: 1px solid #eee; padding: 15px; margin: 0 20px 20px 20px; border-radius: 8px; }
+    .search-card small { color: #673ab7; font-weight: bold; font-size: 13px; display: block; margin-bottom: 6px; }
+
+    form { padding: 0 20px 20px 20px; }
+    .form-group { margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; }
+    label span { color: #e53935; }
+    
+    input[type="text"], textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+    input[type="text"]:focus, textarea:focus { border-color: #673ab7; }
+    
+    .radio-group { background: #fdfdfd; border: 1px solid #ddd; padding: 12px; border-radius: 6px; }
+    .radio-group label { font-weight: normal; margin-bottom: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+    .agree-box { background: #f9f9f9; border: 1px solid #e0e0e0; padding: 12px; border-radius: 6px; font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 8px; }
+    .checkbox-label { font-weight: normal; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+    button.submit-btn { width: 100%; background: #673ab7; color: white; border: none; padding: 16px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    button.submit-btn:hover { background: #512da8; }
+    button.search-btn { width: 100%; background: #424242; color: white; border: none; padding: 10px; font-size: 13px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <h1>미코사픽</h1>
-    <p>라이브 주문서 작성하기</p>
-  </div>
-  <div class="bank-box">
-    입금 계좌: 신한은행 110-639983-742 (예금주 박*호)
+    <h1>미코사픽 주문서</h1>
+    <p>미코사픽 주문서</p>
   </div>
 
-  <div class="content">
-    <!-- 불러오기 및 수정 영역 -->
-    <div class="search-card">
-      <small style="color: #d32f2f; font-weight: bold;">최근 제출하신 주문이 있나요?</small>
-      <input type="text" id="searchNick" placeholder="유튜브 닉네임 입력" style="margin-top: 5px;">
-      <button class="search-btn" onclick="searchData()">불러와서 수정하기</button>
+  <!-- 입금 계좌 안내 -->
+  <div class="notice-box">
+    <strong>입금 후 아래 주문서를 작성해 주세요</strong><br>
+    💳 입금 계좌: 신한은행 110-639983-742 (예금주 박*호)
+  </div>
+
+  <!-- 기존 주문 불러오기 영역 -->
+  <div class="search-card">
+    <small>🔍 이전 작성 내역 불러오기/수정</small>
+    <input type="text" id="searchNick" placeholder="유튜브/틱톡 닉네임 입력">
+    <button type="button" class="search-btn" onclick="searchData()">기존 주문 내역 조회하기</button>
+  </div>
+
+  <!-- 메인 주문서 폼 -->
+  <form id="orderForm">
+    
+    <div class="form-group">
+      <label>유튜브·틱톡 닉네임 (제일중요합니다) <span>*</span></label>
+      <input type="text" id="nickname" required placeholder="내용을 입력해주세요">
     </div>
 
-    <!-- 작성 폼 -->
-    <form id="orderForm">
-      <label>유튜브/틱톡 닉네임 *</label>
-      <input type="text" id="nickname" required>
+    <div class="form-group">
+      <label>입금자명 <span>*</span></label>
+      <input type="text" id="name" required placeholder="내용을 입력해주세요">
+    </div>
 
-      <label>입금자명 *</label>
-      <input type="text" id="name" required>
+    <div class="form-group">
+      <label>고객님 전화번호 <span>*</span></label>
+      <input type="text" id="phone" required placeholder="010-0000-0000">
+    </div>
 
-      <label>고객님 전화번호 *</label>
-      <input type="text" id="phone" required>
+    <div class="form-group">
+      <label>상품받으실 주소 (상세주소) <span>*</span></label>
+      <textarea id="address" rows="2" required placeholder="상세주소까지 정확히 적어주세요"></textarea>
+    </div>
 
-      <label>상품받으실 주소 *</label>
-      <input type="text" id="address" required>
+    <div class="form-group">
+      <label>품 특징 / 컬러 / 사이즈 <span>*</span></label>
+      <textarea id="items" rows="3" required placeholder="예: 니트 블루 M사이즈"></textarea>
+    </div>
 
-      <label>상품 특징 / 컬러 / 사이즈 / 수량 *</label>
-      <textarea id="items" rows="3" required></textarea>
+    <div class="form-group">
+      <label>총 주문 수량 <span>*</span></label>
+      <input type="text" id="quantity" required placeholder="예: 2개">
+    </div>
 
-      <label>총금액 (입금하신 금액) *</label>
-      <input type="text" id="price" required>
+    <div class="form-group">
+      <label>총금액 (배송비포함 입금하신 금액) <span>*</span></label>
+      <input type="text" id="price" required placeholder="예: 45000원">
+    </div>
 
-      <button type="button" class="submit-btn" onclick="sendData()">주문서 제출하기</button>
-    </form>
-  </div>
+    <div class="form-group">
+      <label>배송비 <span>*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="shipping" value="4000원" checked> 4000원</label>
+      </div>
+    </div>
+
+    <!-- 약관 동의 1 -->
+    <div class="form-group">
+      <div class="agree-box">
+        라이브 중개 상품으로 단순 변심, 배송 지연, 퀄리티 불만족 등 개인 사유로 교환 또는 반품이 불가함에 동의합니다. 수입 제품 / 주문상품은 최대 2-3주가 소요될 수 있습니다.
+      </div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="agree1" required> 동의합니다 <span>*</span>
+      </label>
+    </div>
+
+    <!-- 약관 동의 2 -->
+    <div class="form-group">
+      <div class="agree-box">
+        개인정보(이름, 연락처, 주소) 수집 및 이용에 동의합니다. 수집 목적은 주문·배송 확인이며, 라이브 채널 운영 기간 동안 보유합니다.
+      </div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="agree2" required> 동의합니다 <span>*</span>
+      </label>
+    </div>
+
+    <button type="button" class="submit-btn" onclick="sendData()">제출하기</button>
+  </form>
 </div>
 
 <script>
-  // 아까 확인하신 구글 배포 주소입니다
   const API_URL = "https://script.google.com/macros/s/AKfycbx1ayHR5r7HbATmUZtWQ3HMQx21RUqbhpoBP8Tm8Cmcg4U/exec";
 
   function searchData() {
@@ -75,37 +138,6 @@
       .then(r => r.json())
       .then(data => {
         if (data.result) {
-          document.getElementById("nickname").value = data.result.nickname;
-          document.getElementById("name").value = data.result.name;
-          document.getElementById("phone").value = data.result.phone;
-          document.getElementById("address").value = data.result.address;
-          document.getElementById("items").value = data.result.items;
-          document.getElementById("price").value = data.result.price;
-          alert("이전 주문을 불러왔습니다. 수정 후 제출해주세요!");
-        } else {
-          alert("기존 주문 내역이 없습니다.");
-        }
-      });
-  }
-
-  function sendData() {
-    const payload = {
-      nickname: document.getElementById("nickname").value,
-      name: document.getElementById("name").value,
-      phone: document.getElementById("phone").value,
-      address: document.getElementById("address").value,
-      items: document.getElementById("items").value,
-      price: document.getElementById("price").value
-    };
-
-    fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
-      .then(r => r.json())
-      .then(data => {
-        alert(data.updated ? "주문이 수정되었습니다!" : "주문이 정상 제출되었습니다!");
-        document.getElementById("orderForm").reset();
-      });
-  }
-</script>
-
-</body>
-</html>
+          document.getElementById("nickname").value = data.result.nickname || "";
+          document.getElementById("name").value = data.result.name || "";
+          document.getElementById("phone").value = data.result
