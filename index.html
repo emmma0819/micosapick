@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미코사픽 주문서</title>
+  <style>
+    * { box-sizing: border-box; font-family: sans-serif; }
+    body { background-color: #f7f5f0; margin: 0; padding: 15px 10px; }
+    .container { max-width: 450px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { background: #d32f2f; color: white; text-align: center; padding: 30px 20px; }
+    .header h1 { margin: 0; font-size: 28px; }
+    .bank-box { background: #9a0007; color: white; padding: 12px; text-align: center; font-size: 13px; }
+    .content { padding: 20px; }
+    .search-card { background: #fff5f5; border: 1px solid #ffcdd2; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin-top: 12px; margin-bottom: 5px; font-size: 13px; }
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    button.submit-btn { width: 100%; background: #d32f2f; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 6px; margin-top: 20px; cursor: pointer; font-weight: bold; }
+    button.search-btn { width: 100%; background: #333; color: white; border: none; padding: 8px; font-size: 13px; border-radius: 4px; margin-top: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>미코사픽</h1>
+    <p>라이브 주문서 작성하기</p>
+  </div>
+  <div class="bank-box">
+    입금 계좌: 신한은행 110-639983-742 (예금주 박*호)
+  </div>
+
+  <div class="content">
+    <!-- 불러오기 및 수정 영역 -->
+    <div class="search-card">
+      <small style="color: #d32f2f; font-weight: bold;">최근 제출하신 주문이 있나요?</small>
+      <input type="text" id="searchNick" placeholder="유튜브 닉네임 입력" style="margin-top: 5px;">
+      <button class="search-btn" onclick="searchData()">불러와서 수정하기</button>
+    </div>
+
+    <!-- 작성 폼 -->
+    <form id="orderForm">
+      <label>유튜브/틱톡 닉네임 *</label>
+      <input type="text" id="nickname" required>
+
+      <label>입금자명 *</label>
+      <input type="text" id="name" required>
+
+      <label>고객님 전화번호 *</label>
+      <input type="text" id="phone" required>
+
+      <label>상품받으실 주소 *</label>
+      <input type="text" id="address" required>
+
+      <label>상품 특징 / 컬러 / 사이즈 / 수량 *</label>
+      <textarea id="items" rows="3" required></textarea>
+
+      <label>총금액 (입금하신 금액) *</label>
+      <input type="text" id="price" required>
+
+      <button type="button" class="submit-btn" onclick="sendData()">주문서 제출하기</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 아까 확인하신 구글 배포 주소입니다
+  const API_URL = "https://script.google.com/macros/s/AKfycbx1ayHR5r7HbATmUZtWQ3HMQx21RUqbhpoBP8Tm8Cmcg4U/exec";
+
+  function searchData() {
+    const nick = document.getElementById("searchNick").value.trim();
+    if (!nick) return alert("닉네임을 입력해주세요.");
+
+    fetch(`${API_URL}?nickname=${encodeURIComponent(nick)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.result) {
+          document.getElementById("nickname").value = data.result.nickname;
+          document.getElementById("name").value = data.result.name;
+          document.getElementById("phone").value = data.result.phone;
+          document.getElementById("address").value = data.result.address;
+          document.getElementById("items").value = data.result.items;
+          document.getElementById("price").value = data.result.price;
+          alert("이전 주문을 불러왔습니다. 수정 후 제출해주세요!");
+        } else {
+          alert("기존 주문 내역이 없습니다.");
+        }
+      });
+  }
+
+  function sendData() {
+    const payload = {
+      nickname: document.getElementById("nickname").value,
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      items: document.getElementById("items").value,
+      price: document.getElementById("price").value
+    };
+
+    fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
+      .then(r => r.json())
+      .then(data => {
+        alert(data.updated ? "주문이 수정되었습니다!" : "주문이 정상 제출되었습니다!");
+        document.getElementById("orderForm").reset();
+      });
+  }
+</script>
+
+</body>
+</html>
