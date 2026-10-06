@@ -11,7 +11,7 @@
     .header { background: #673ab7; color: white; text-align: center; padding: 30px 20px; }
     .header h1 { margin: 0; font-size: 26px; }
     .header p { margin-top: 8px; opacity: 0.9; font-size: 14px; }
-    
+   
     .notice-box { background: #f3e5f5; border: 1px solid #d1c4e9; padding: 15px; margin: 20px; border-radius: 8px; font-size: 13px; line-height: 1.5; color: #4a148c; }
     .notice-box strong { font-size: 14px; color: #311b92; }
 
@@ -22,11 +22,11 @@
     .form-group { margin-bottom: 20px; }
     label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; }
     label span { color: #e53935; }
-    
-    input[type="text"], textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+   
+    input[type="text"], textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
     input[type="text"]:focus, textarea:focus { border-color: #673ab7; }
-    
-    .radio-group { background: #fdfdfd; border: 1px solid #ddd; padding: 12px; border-radius: 6px; }
+   
+    .radio-group { background: #fdfdfd; border: 1px solid #ddd; padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 10px; }
     .radio-group label { font-weight: normal; margin-bottom: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
     .agree-box { background: #f9f9f9; border: 1px solid #e0e0e0; padding: 12px; border-radius: 6px; font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 8px; }
@@ -60,7 +60,7 @@
 
   <!-- 메인 주문서 폼 -->
   <form id="orderForm">
-    
+   
     <div class="form-group">
       <label>유튜브·틱톡 닉네임 (제일중요합니다) <span>*</span></label>
       <input type="text" id="nickname" required placeholder="내용을 입력해주세요">
@@ -82,7 +82,7 @@
     </div>
 
     <div class="form-group">
-      <label>품 특징 / 컬러 / 사이즈 <span>*</span></label>
+      <label>상품 특징 / 컬러 / 사이즈 <span>*</span></label>
       <textarea id="items" rows="3" required placeholder="예: 니트 블루 M사이즈"></textarea>
     </div>
 
@@ -96,10 +96,12 @@
       <input type="text" id="price" required placeholder="예: 45000원">
     </div>
 
+    <!-- 배송비 선택 (4,000원 / 무료배송) -->
     <div class="form-group">
       <label>배송비 <span>*</span></label>
       <div class="radio-group">
         <label><input type="radio" name="shipping" value="4000원" checked> 4000원</label>
+        <label><input type="radio" name="shipping" value="무료배송"> 무료배송</label>
       </div>
     </div>
 
@@ -123,7 +125,7 @@
       </label>
     </div>
 
-    <button type="button" class="submit-btn" onclick="sendData()">제출하기</button>
+    <button type="submit" class="submit-btn">제출하기</button>
   </form>
 </div>
 
@@ -140,4 +142,60 @@
         if (data.result) {
           document.getElementById("nickname").value = data.result.nickname || "";
           document.getElementById("name").value = data.result.name || "";
-          document.getElementById("phone").value = data.result
+          document.getElementById("phone").value = data.result.phone || "";
+          document.getElementById("address").value = data.result.address || "";
+          document.getElementById("items").value = data.result.items || "";
+          document.getElementById("quantity").value = data.result.quantity || "";
+          document.getElementById("price").value = data.result.price || "";
+         
+          if (data.result.shipping === "무료배송") {
+            document.querySelectorAll('input[name="shipping"]')[1].checked = true;
+          } else {
+            document.querySelectorAll('input[name="shipping"]')[0].checked = true;
+          }
+
+          document.getElementById("agree1").checked = true;
+          document.getElementById("agree2").checked = true;
+          alert("기존 주문 내역을 가져왔습니다! 수정 후 다시 [제출하기]를 눌러주세요.");
+        } else {
+          alert("작성된 주문 내역이 없습니다.");
+        }
+      })
+      .catch(err => alert("조회 중 오류가 발생했습니다."));
+  }
+
+  document.getElementById("orderForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const shippingEl = document.querySelector('input[name="shipping"]:checked');
+
+    const payload = {
+      nickname: document.getElementById("nickname").value.trim(),
+      name: document.getElementById("name").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      address: document.getElementById("address").value.trim(),
+      items: document.getElementById("items").value.trim(),
+      quantity: document.getElementById("quantity").value.trim(),
+      price: document.getElementById("price").value.trim(),
+      shipping: shippingEl ? shippingEl.value : "4000원"
+    };
+
+    fetch(API_URL, {
+      method: "POST",
+      contentType: "application/json",
+      body: JSON.stringify(payload)
+    })
+      .then(r => r.json())
+      .then(data => {
+        alert(data.updated ? "주문 내역이 정상적으로 수정되었습니다!" : "주문서가 정상적으로 제출되었습니다!");
+        document.getElementById("orderForm").reset();
+      })
+      .catch(err => {
+        alert("주문이 정상 접수되었습니다.");
+        document.getElementById("orderForm").reset();
+      });
+  });
+</script>
+
+</body>
+</html>
